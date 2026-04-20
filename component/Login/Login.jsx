@@ -1,4 +1,4 @@
-import React, { use, useState } from "react";
+import React, { use, useRef, useState } from "react";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 import { FaRegUser } from "react-icons/fa";
@@ -6,15 +6,29 @@ import { NavLink, useNavigate } from "react-router";
 import { AuthContext } from "../../provider/Authprovider";
 
 const Login = () => {
-  const { signInUser,loading } = use(AuthContext);
+  const { signInUser, loading, forgetPassword } = use(AuthContext);
   const [password, setPassword] = useState(false);
   const [erorSms, seterorSms] = useState("");
   const [sucessful, setsucsecful] = useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const passwordShowHandler = () => {
     setPassword(!password);
+  };
+
+  const emailRef = useRef('')
+
+  const forgetHandler = (e) => {
+       e.preventDefault()
+    const email = emailRef.current.value
+    console.log('forget password',email)
+ 
+    forgetPassword(email)
+    .then((result)=>{
+      console.log(result)
+      alert('Password reset email sent! Check your inbox.')
+    })
   };
 
   const longinHandler = (e) => {
@@ -23,12 +37,12 @@ const Login = () => {
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    console.log(email,password)
+    console.log(email, password);
     signInUser(email, password)
       .then((result) => {
         console.log(result);
         setsucsecful(true);
-        navigate('/')
+        navigate("/");
       })
       .catch((eror) => {
         console.log(eror);
@@ -47,8 +61,6 @@ const Login = () => {
             </div>
 
             <form
-              action="#
-            "
               onSubmit={longinHandler}
             >
               <fieldset className="fieldset">
@@ -58,6 +70,7 @@ const Login = () => {
                   name="email"
                   className="input"
                   placeholder="Email"
+                  ref={emailRef}
                 />
 
                 <label className="label ">Password</label>
@@ -78,14 +91,13 @@ const Login = () => {
                 </div>
 
                 <div>
-                  <a className="link link-hover">Forgot password?</a>
+                  <a onClick={forgetHandler} className="link link-hover">Forgot password?</a>
                 </div>
                 <button
                   type="submit"
                   className="btn bg-gray-500 text-white font-bold mt-4"
                 >
-                  {loading? <loading></loading>: "Login"}
-                
+                  {loading ? <loading></loading> : "Login"}
                 </button>
                 <div className="mt-5">
                   <h2 className="font-bold">
